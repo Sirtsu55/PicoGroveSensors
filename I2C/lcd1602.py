@@ -1,20 +1,6 @@
 from machine import I2C, Pin
 import time
-class Display(object):
-    # color define 
-    WHITE = 0
-    RED = 1
-    GREEN = 2
-    BLUE = 3
-
-    REG_RED = 0x04        # pwm2
-    REG_GREEN = 0x03      # pwm1
-    REG_BLUE = 0x02       # pwm0
-
-    REG_MODE1 = 0x00
-    REG_MODE2 = 0x01
-    REG_OUTPUT = 0x08
-
+class LCD1602(object):
     #commands
     LCD_CLEARDISPLAY = 0x01
     LCD_RETURNHOME = 0x02
@@ -53,10 +39,9 @@ class Display(object):
     LCD_5x10DOTS = 0x04
     LCD_5x8DOTS = 0x00
     
-    def __init__(self, i2c, lines, dotsize, lcd_addr=0x3E, rgb_addr=0x62):
+    def __init__(self, i2c, lines, dotsize, lcd_addr=0x3E):
         self.i2c = i2c
         self.lcd_address = lcd_addr
-        self.rgb_address = rgb_addr
         self.line = lines
         self.currline = 0;
         self.display_control = self.LCD_DISPLAYON
@@ -99,13 +84,7 @@ class Display(object):
         #Initialize to default text direction (for romance languages)
         self.display_mode = self.LCD_ENTRYLEFT | self.LCD_ENTRYSHIFTDECREMENT
         #set the entry mode
-        self.command(self.LCD_ENTRYMODESET | self.display_mode)
-        
-        #backlight init
-        self.set_reg(0, 0)
-        self.set_reg(1, 0)
-        self.set_reg(0x08, 0xAA) #all led control by pwm
-        self.set_rgb(255, 255, 255)      
+        self.command(self.LCD_ENTRYMODESET | self.display_mode)  
         
     def clear(self):
         self.command(self.LCD_CLEARDISPLAY)   #clear display, set cursor position to zero
@@ -170,6 +149,32 @@ class Display(object):
         for char in text:
             self.write(ord(char))
 
+
+        
+class LCD1602_RGB(LCD1602):
+    # color define 
+    WHITE = 0
+    RED = 1
+    GREEN = 2
+    BLUE = 3
+
+    REG_RED = 0x04        # pwm2
+    REG_GREEN = 0x03      # pwm1
+    REG_BLUE = 0x02       # pwm0
+
+    REG_MODE1 = 0x00
+    REG_MODE2 = 0x01
+    REG_OUTPUT = 0x08
+    def __init__(self, i2c, lines, dotsize, lcd_addr=0x3E, rgb_addr=0x62):
+        self.rgb_address = rgb_addr
+        LCD1602.__init__(self, i2c, lines, dotsize, lcd_addr)
+        
+        #backlight init
+        self.set_reg(0, 0)
+        self.set_reg(1, 0)
+        self.set_reg(0x08, 0xAA) #all led control by pwm
+        self.set_rgb(255, 255, 255)
+
     def set_reg(self, addr, value):
         value = bytearray([value])
         self.i2c.writeto_mem(self.rgb_address, addr, bytearray([]))
@@ -196,3 +201,4 @@ class Display(object):
             return
         
         
+
