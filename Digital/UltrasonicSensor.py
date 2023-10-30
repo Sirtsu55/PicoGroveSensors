@@ -1,8 +1,8 @@
 from machine import Pin
 import utime
 
-TIMEOUT1 = 1000
-TIMEOUT2 = 1000
+TIMEOUT1 = 10000
+TIMEOUT2 = 10000
 
 class UltrasonicSensor():
 
@@ -12,8 +12,7 @@ class UltrasonicSensor():
         self.TIMEOUT2 = 1000
 
 
-    def GetDistance(self) -> str:
-        
+    def GetDistance(self):
         self.sensor.init(Pin.OUT)
 
 

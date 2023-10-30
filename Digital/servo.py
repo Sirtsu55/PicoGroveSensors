@@ -1,8 +1,26 @@
 from machine import Pin, PWM
-class SERVO:
-    def __init__(self, pin):
-        self.pin = pin
-        self.pwm = PWM(self.pin)
-    def turn(self, val):
-        self.pwm.freq(100)
-        self.pwm.duty_u16(int(val/180*13000+4000))
+
+class ServoController():
+    
+    def __init__(self, pin, min_pulse_width_ms, max_pulse_width_ms, max_angle):
+        self.pin = PWM(pin)
+        self.pin.freq(50)
+        self.pin.duty_u16(0)
+        self.min_pulse_width = min_pulse_width_ms
+        self.max_pulse_width = max_pulse_width_ms
+        self.max_angle = max_angle
+        
+
+    def SetAngle(self, angle):
+        pulse_width = self.min_pulse_width + (self.max_pulse_width - self.min_pulse_width) * (angle / self.max_angle)
+        print(int(pulse_width * 65535 / 20))
+        self.pin.duty_u16(int(pulse_width * 65535 / 20))
+
+    def Relax(self):
+        self.pin.deinit()
+    
+    def ContinuousRotate(self):
+        self.pin.duty_u16(32768)
+
+
+
