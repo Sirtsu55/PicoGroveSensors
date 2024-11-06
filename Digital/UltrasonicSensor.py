@@ -7,7 +7,7 @@ TIMEOUT2 = 10000
 class UltrasonicSensor():
 
     def __init__(self, pin):
-        self.sensor = pin
+        self.sensor = Pin(pin)
         self.TIMEOUT1 = 1000
         self.TIMEOUT2 = 1000
 
